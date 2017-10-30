@@ -1,5 +1,4 @@
 language: php
-sudo: required
 php:
   - '7.2'
   - '7.1'
@@ -7,45 +6,19 @@ php:
 
 env:
   global:
-    - MYSQL_CONN="host=localhost;dbname=travis_ci_test;user=root;password="
-    - PG_CONN="host=localhost;port=5432;dbname=travis_ci_test;user=postgres;password="
     - CC_TEST_REPORTER_ID=f045c1f84d932e100022aec316b24b7abb54fdeaaf4aefca19d78205d32a57c6
     - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
-
-addons:
-   - postgresql: "9.5"
-   - mariadb: '10.0'
-
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y graphviz
+    
 
 before_script:
-    - mysql -e 'CREATE DATABASE travis_ci_test;'
-    - psql -c 'create database travis_ci_test;' -U postgres
-    - if [[ "$TRAVIS_OS_NAME" == 'linux' ]] ; then sudo apt-get install rsync ; fi
-    - touch travis.php.ini
-    - sudo chmod 0777 travis.php.ini
-    - pecl config-set php_ini travis.php.ini
-    - pear config-set php_ini travis.php.ini
-    - phpenv config-add travis.php.ini
-    - composer install
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
     - ./cc-test-reporter before-build
 
 script:
     - mkdir build && mkdir build/logs
+    - composer install
     - composer test
     
 after_script:
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then php vendor/bin/codacycoverage clover build/logs/clover.xml ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then ./vendor/bin/test-reporter ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then composer api-gen ;fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py && sudo pip install mkdocs ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Documentation && mkdocs build && cd ../ ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Documentation && git clone -b gh-pages $GIT_REMOTE ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then rsync -avh --progress ./site/ ./Gishiki ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then git config --global user.email "benato.denis96@gmail.com" && git config --global user.name "Denis Benato" && git config --global push.default matching  ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Gishiki &&  git add * && git commit -m "deploy doc from commit $TRAVIS_BRANCH ( $TRAVIS_COMMIT ) " && git push ; fi
   - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
