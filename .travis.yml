@@ -16,8 +16,6 @@ before_script:
     - ./cc-test-reporter before-build
 
 script:
-    - mkdir build && mkdir build/logs
-    - composer install
     - composer test
     
 after_script:
