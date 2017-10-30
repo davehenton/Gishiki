@@ -43,14 +43,5 @@ script:
     - composer test
     
 after_script:
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then php vendor/bin/codacycoverage clover build/logs/clover.xml ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then ./vendor/bin/test-reporter ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then composer api-gen ;fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py && sudo pip install mkdocs ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Documentation && mkdocs build && cd ../ ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Documentation && git clone -b gh-pages $GIT_REMOTE ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then rsync -avh --progress ./site/ ./Gishiki ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then git config --global user.email "benato.denis96@gmail.com" && git config --global user.name "Denis Benato" && git config --global push.default matching  ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Gishiki &&  git add * && git commit -m "deploy doc from commit $TRAVIS_BRANCH ( $TRAVIS_COMMIT ) " && git push ; fi
   - if [ $(phpenv version-name) = "7.1" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT; fi
 
