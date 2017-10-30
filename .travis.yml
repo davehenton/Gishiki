@@ -9,6 +9,8 @@ env:
   global:
     - MYSQL_CONN="host=localhost;dbname=travis_ci_test;user=root;password="
     - PG_CONN="host=localhost;port=5432;dbname=travis_ci_test;user=postgres;password="
+    - CC_TEST_REPORTER_ID=f045c1f84d932e100022aec316b24b7abb54fdeaaf4aefca19d78205d32a57c6
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
 
 addons:
    - postgresql: "9.5"
@@ -27,10 +29,10 @@ before_script:
     - pecl config-set php_ini travis.php.ini
     - pear config-set php_ini travis.php.ini
     - phpenv config-add travis.php.ini
- #   - composer self-update
     - composer install
- #   - sleep 15
- #   - mongo localhost:27017/gishiki ./tests/SetupTestingMongo.js
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
 
 script:
     - mkdir build && mkdir build/logs
@@ -46,3 +48,4 @@ after_script:
   - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then rsync -avh --progress ./site/ ./Gishiki ; fi
   - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then git config --global user.email "benato.denis96@gmail.com" && git config --global user.name "Denis Benato" && git config --global push.default matching  ; fi
   - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then cd Gishiki &&  git add * && git commit -m "deploy doc from commit $TRAVIS_BRANCH ( $TRAVIS_COMMIT ) " && git push ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
