@@ -1,30 +1,41 @@
+---
 engines:
+  csslint:
+    enabled: false
+  phpcodesniffer:
+    enabled: false  
   duplication:
     enabled: false
     config:
       languages:
-      - php
+      - php:
+          mass_threshold: 36
+  eslint:
+    enabled: true
   fixme:
     enabled: true
   phpmd:
     enabled: true
-    checks:
-      Controversial/Superglobals:
-        enabled: false
-      CleanCode/BooleanArgumentFlag:
-        enabled: true
-      Design/WeightedMethodCount:
-        enabled: true
-      CleanCode/StaticAccess:
-        enabled: false
-      Design/TooManyPublicMethods:
-        enabled: true
+    config:
+      file_extensions: "php"
+      rulesets: "./ruleset.xml"
+#      rulesets: "unusedcode,codesize,naming,ruleset.xml"
 ratings:
   paths:
   - "**.php"
 exclude_paths:
-- "/tests"
-- "/Documentation"
-- "**Interface.php"
-- "/src/Database/Runtime/FieldOrdering.php"
-- "/src/Database/Runtime/ColumnType.php"
+- vendor/
+- public/
+- .idea/
+- .phan/
+- .vagrant/
+- _ide_helper.php 
+
+
+- database
+
+# Providers has default laravel naming convention so that ignored from test
+- app/Providers
+- app/Services
+# modules package not done to test
+- app/Modules
