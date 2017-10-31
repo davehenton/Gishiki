@@ -18,7 +18,7 @@ engines:
     enabled: true
     config:
       file_extensions: "php"
-      rulesets: "./ruleset.xml"
+      rulesets: "ruleset.xml"
 #      rulesets: "unusedcode,codesize,naming,ruleset.xml"
 ratings:
   paths:
